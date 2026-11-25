@@ -4,7 +4,7 @@ import os
 from sklearn.metrics import classification_report
 
 # load model
-model = tf.keras.models.load_model("models/baseline_cnn.h5")
+model = tf.keras.models.load_model("Models/base_models/baseline_cnn.h5")
 
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
 converter.optimizations = [tf.lite.Optimize.DEFAULT]
@@ -26,14 +26,14 @@ converter.inference_output_type = tf.int8
 tflite_model = converter.convert()
 
 # save
-tflite_path = "models/cnn_8bit.tflite"
+tflite_path = "Models/cnn_8bit.tflite"
 with open(tflite_path, "wb") as f:
     f.write(tflite_model)
 
-print("TFLite model saved!!!!!")
+print("TFLite model saved.")
 
 # size comparison
-keras_size = os.path.getsize("models/baseline_cnn.h5") / 1024
+keras_size = os.path.getsize("Models/base_models/baseline_cnn.h5") / 1024
 tflite_size = os.path.getsize(tflite_path) / 1024
 
 print(f"Keras model size: {keras_size:.2f} KB")

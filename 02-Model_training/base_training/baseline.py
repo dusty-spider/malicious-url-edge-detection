@@ -8,7 +8,6 @@ X_test  = np.load("X_test1.npy")
 y_train = np.load("y_train1.npy")
 y_val   = np.load("y_val1.npy")
 y_test  = np.load("y_test1.npy")
-#rechek
 print(X_train.shape, y_train.shape)
 
 #balancing the data
@@ -26,7 +25,6 @@ class_weight_dict = {
     0: class_weights[0],
     1: class_weights[1]
 }
-#rechek
 print(class_weight_dict)
 
 
@@ -82,7 +80,7 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 
 callbacks = [
     EarlyStopping(monitor="val_loss", patience=3, restore_best_weights=True),
-    ModelCheckpoint("models/baseline_cnn.h5", monitor="val_loss",save_best_only=True)
+    ModelCheckpoint("Models/base_models/baseline_cnn.h5", monitor="val_loss", save_best_only=True)
 ]
 
 history = model.fit(

@@ -1,21 +1,28 @@
-short instruction of the set up
-commands on what and how to do:
+# Raspberry Pi deployment
 
+Files needed on the Pi:
 
-1.set up virtual environment if needed
+- `pi_predict.py`
+- `02_mitmproxy.py`
+- `char_to_idx_reproduce.json`
+- one deployed model from `Models/deployed_models/`
 
-2.transfer the files to the edge device by your preffered method via usb or ssh
+Copy the model you want to use onto the Pi and set `MODEL_PATH` in
+`pi_predict.py` to match its filename.
 
-files needed to run: 
-01_pi_predict.py
-02_mitmproxy.py
-char_to_idx_reproduce.json
+Setup:
 
-adittionally you can download extra deployment option located in the /extra_deployment_option for the pi_api_flask easier set up
+1. Create a virtual environment if needed.
+2. Transfer the files with USB or scp.
+3. Register mitmproxy's CA certificate in the browser on the client machine.
+4. Set the Pi's IP address as the browser's proxy.
 
-3.register your set up with mitmproxy in the browser on the client machine
+Start the proxy:
 
-4.set up the edge device ip as a proxy on the clients browser
+    mitmproxy -s 02_mitmproxy.py --listen-host 0.0.0.0 --listen-port 8080
 
-5.start the proxy by running: mitmproxy -s mitproxy.py --listen-host 0.0.0.0 --listen-port 8080
+This is a lab setup. The proxy has no authentication and listens on all interfaces,
+so do not expose it outside a trusted network.
 
+An optional Flask API prototype is in `extra_deployment_option/`. It was not used in
+the final proxy demo.

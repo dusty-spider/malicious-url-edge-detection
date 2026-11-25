@@ -1,0 +1,17 @@
+# Python packages used in this project.
+# Install with: pip install -r requirements.txt
+#
+# These are not version-pinned because the exact versions used during the
+# honours project were not recorded. For strict reproducibility, run
+#   pip freeze > requirements.txt
+# on a working environment and commit the pinned result instead.
+
+tensorflow
+keras
+pandas
+numpy
+scikit-learn
+matplotlib
+ai-edge-litert
+mitmproxy
+flask

@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 #tokenisation and canonicalisation functions from Common
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-from common.preprocessing import canonicalize_url, tokenize
+from Common.preprocessing import canonicalize_url, tokenize
 
 
 # load splits

@@ -1,0 +1,34 @@
+# Python caches and build files
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Raw data and generated arrays. Download these separately;
+# see 01-Datasets/README.md for the source links.
+*.npy
+*.npz
+*.parquet
+raw_data/
+temp/
+
+# CSVs are ignored by default so raw downloads cannot be committed by accident.
+# The result files we do want to keep are listed here.
+*.csv
+!03-Evaluation/results/*.csv
+!05-Drift/results/*.csv
+
+# Do NOT ignore Models/ or assets/demo_showcase.mp4 - those are part of the evidence.
