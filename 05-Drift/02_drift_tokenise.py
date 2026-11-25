@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 # og tokenisation and canonicalisation
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-from common.preprocessing import canonicalize_url, tokenize
+from Common.preprocessing import canonicalize_url, tokenize
 
 # the og vocabulary
 with open("char_to_idx_reproduce.json", "r") as f:

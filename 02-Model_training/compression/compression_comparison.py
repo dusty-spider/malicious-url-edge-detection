@@ -7,10 +7,10 @@ from sklearn.metrics import accuracy_score
 
 # models load 
 MODELS_TO_COMPRESS = [
-    ("models/cnn_lstm1.keras",          "models/tflite_lstm"),
-    ("models/baseline_cnn.h5",          "models/tflite_cnn"),
-    ("models/cnn_lstm_pruned70.keras",  "models/tflitelstm_prune70"),
-    ("models/baseline_cnn_pruned70.h5", "models/tflitecnn_prune70"),
+    ("Models/base_models/cnn_lstm1.keras",          "Models/tflite_lstm"),
+    ("Models/base_models/baseline_cnn.h5",          "Models/tflite_cnn"),
+    ("Models/base_models/cnn_lstm_pruned70.keras",  "Models/tflitelstm_prune70"),
+    ("Models/base_models/baseline_cnn_pruned70.h5", "Models/tflitecnn_prune70"),
 ]
 
 def export(MODEL_PATH, SAVE_DIR):

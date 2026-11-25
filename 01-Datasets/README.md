@@ -19,5 +19,5 @@ mixed    - phisuiil: https://www.kaggle.com/datasets/ndarvind/phiusiil-phishing-
 
 The main dataset was made by 
 ```
-merging 3 datasets -> removing dublicates -> lowercase normalisation and preprocessing -> character level tokenisation -> vocab mapping, reproduction file creation -> class weighting -> 70/15/15 split application 
+merging 3 datasets -> removing duplicates -> lowercase normalisation and preprocessing -> character level tokenisation -> vocab mapping, reproduction file creation -> class weighting -> 70/15/15 split application 
 ```

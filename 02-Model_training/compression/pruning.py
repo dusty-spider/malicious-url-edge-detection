@@ -2,8 +2,8 @@ import tensorflow as tf
 import numpy as np
 
 models_to_prune = [
-    {"model_path": "models/cnn_lstm1.keras",    "output_path": "models/cnn_lstm_pruned70.keras"},
-    {"model_path": "models/baseline_snn.h5",    "output_path": "models/baseline_cnn_pruned70.h5"},
+    {"model_path": "Models/base_models/cnn_lstm1.keras", "output_path": "Models/base_models/cnn_lstm_pruned70.keras"},
+    {"model_path": "Models/base_models/baseline_cnn.h5", "output_path": "Models/base_models/baseline_cnn_pruned70.h5"},
 ]
 
 EPOCHS = 8 
@@ -12,7 +12,6 @@ BATCH_SIZE = 512
 
 def prune_model(model_path, output_path):
     model = tf.keras.models.load_model(model_path)
-# old thing: model = tf.keras.models.load_model("models/cnn_lstm1.keras")
 
     total_params = 0
     zero_params = 0
@@ -52,6 +51,6 @@ def main():
         prune_model(**x)
 
 
-#at first tried 50% sparcity with 5 epochs but result were so limited i switched to 70 and 8 epochs
+# 50% sparsity over 5 epochs gave limited results; settled on 70% over 8 epochs.
 if __name__ == "__main__":
     main()

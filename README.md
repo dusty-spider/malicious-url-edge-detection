@@ -6,12 +6,18 @@ A compressed CNN-LSTM model that detects phishing/malicious URLs in real time on
 
 > Final year Honours project, BSc (Hons) Cyber Security and Networks.
 
+> **About this repository:** This is the research report and evidence for the
+> project, not a one-command runnable product. Training data comes from third-party
+> sources (PhishTank, Kaggle, Tranco, PhiUSIIL) and is not redistributed here;
+> live sources change daily, so exact reproduction needs a dated snapshot.
+
 ---
 
 ## Table of Contents
 
 - [Overview](#overview)
 - [Key Results](#key-results)
+- [Detection engineering relevance](#detection-engineering-relevance)
 - [How It Works](#how-it-works)
 - [Tech Stack](#tech-stack)
 - [Repository Structure](#repository-structure)
@@ -49,6 +55,17 @@ To find out, this project:
 - INT8 quantisation caused the model to collapse (accuracy dropped to 0.55, malicious recall to 0) and was excluded from deployment.
 - Pruning improved accuracy after fine-tuning but did **not** reduce latency on the Pi's ARM Cortex-A72 — a useful finding on the limits of unstructured pruning on ARM hardware.
 - Under data drift (unseen phishing patterns from a different source), recall dropped from ~90% to ~50–60%, showing that periodic retraining is essential for long-term reliability — model compression was not the limiting factor.
+
+## Detection engineering relevance
+
+This work maps to MITRE ATT&CK **T1566.002 — Spearphishing Link** (Initial Access,
+`TA0001`). URLs are classified on-device and malicious links are blocked at the
+browser by a mitmproxy addon, giving a local, privacy-preserving enforcement point
+instead of a cloud round-trip.
+
+It is an experimental detector, not a production control: the CNN-LSTM result has
+about 85% precision, so roughly 15% of blocked URLs would be benign. Threshold
+tuning and a measured false-positive profile are needed before real-world use.
 
 ## Diagrams & Results
 
@@ -97,7 +114,7 @@ The system operated fully locally; the data was analysed on a local edge device,
 ![Proxy logs demo](assets/proxy_logs_demo.png)
 
 Demo of the delivarable:
-[video]()
+[video](assets/demo_showcase.mp4)
 
 ## Hypothesis Evaluation
 
@@ -188,13 +205,13 @@ The CNN-LSTM architecture embeds each character of a URL, passes it through a co
 |		├── compression_comparison.py
 |	    └── pruning.py
 |
-├── 03-Deployment/                      # everything that physically ran on the Pi (transferred via SCP)
-│   ├── 01_pi_predict.py
+├── 04-Deployment/                      # everything that physically ran on the Pi (transferred via SCP)
+│   ├── pi_predict.py
 │   ├── 02_mitmproxy.py
 │   ├── pi_evaluation.py
 │   └── README.md                    # Pi setup: venv, SSH access, files transferred, run commands
 │
-├── 04-Evaluation/
+├── 03-Evaluation/
 │   ├── model_evaluation.py
 │   └── results/
 |	    ├── evaluation_all_seed_8.csv
@@ -223,13 +240,13 @@ The CNN-LSTM architecture embeds each character of a URL, passes it through a co
 |		└── prune70lstm_dynamic.tflite
 │
 ├── extra_deployment_option/
-│   └── pi_flask_api.py              # prototype REST API, not used in the final proxy deliverable
+│   └── pi_api_flask.py              # prototype REST API, not used in the final proxy deliverable
 │
 ├── assets/                          # figures/diagrams used in this README
 └── README.md
 ```
 
-> Note: the `03-Deployment/` code ran directly on the Raspberry Pi over SSH, which was set up as a standalone environment separate from the main development machine — all files it needs (models, `char_to_idx_reproduce.json`, tokenisation logic) were transferred over via SCP rather than imported across machines, hence the shared logic being duplicated there via `Common/preprocessing.py`.
+> Note: the `04-Deployment/` code ran directly on the Raspberry Pi over SSH, which was set up as a standalone environment separate from the main development machine — all files it needs (models, `char_to_idx_reproduce.json`, tokenisation logic) were transferred over via SCP rather than imported across machines, hence the shared logic being duplicated there via `Common/preprocessing.py`.
 
 ## Getting Started
 
@@ -241,54 +258,57 @@ The CNN-LSTM architecture embeds each character of a URL, passes it through a co
 ### Installation
 
 ```bash
-git clone https://github.com/<your-username>/<your-repo>.git
-cd <your-repo>
+git clone https://github.com/dusty-spider/malicious-url-edge-detection.git
+cd malicious-url-edge-detection
 python -m venv venv
 source venv/bin/activate      # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-> check `assets/requirements.txt` for python libraries if needed
+> The package list is in `requirements.txt` at the repository root; `.gitignore`
+> keeps caches, virtual environments and raw data out of commits. This repository
+> documents the research; the training data is third-party and is not
+> redistributed here.
 
 ## Usage
 
 **1. Prepare the dataset** (see `01-Datasets/README.md` for source download links):
 ```bash
-python data/01_clean_urls.py
-python data/02_data_merge.py
-python data/03_data_split.py
-python data/04_tokenize_pad.py
+python 01-Datasets/01_clean_urls.py
+python 01-Datasets/02_data_merge.py
+python 01-Datasets/03_data_split.py
+python 01-Datasets/04_tokenize_pad.py
 ```
 
 **2. Train the models:**
 ```bash
-python 02_Model_training/base_training/baseline.py
-python 02_Model_training/base_trainig/lstm_base_1.py
+python 02-Model_training/base_training/baseline.py
+python 02-Model_training/base_training/lstm_base_1.py
 ```
 
 **3. Compress (quantise + prune):**
 ```bash
-python 02_Model_training/compression/compression_comparison.py 
-python 02_Model_training/compression/pruning.py 
+python 02-Model_training/compression/compression_comparison.py 
+python 02-Model_training/compression/pruning.py 
 ```
 
 **4. Evaluate:**
 ```bash
-python 03_Evaluation/model_evaluation.py
+python 03-Evaluation/model_evaluation.py
 ```
 
-**5. Deploy to the Pi** (see `03_Deployment/README.md`):
+**5. Deploy to the Pi** (see `04-Deployment/README.md`):
 ```bash
-user@machine:~/modeltest $ mitmproxy -s mitproxy.py --listen-host 0.0.0.0 --listen-port 8080
+user@machine:~/modeltest $ mitmproxy -s 02_mitmproxy.py --listen-host 0.0.0.0 --listen-port 8080
 ```
 Point your browser's proxy settings at the Pi and install mitmproxy's CA certificate on the client — malicious links will be blocked with a warning page showing the model's confidence and latency.
 
 **6. Drift** 
 Optional for the end result, continue if you would like to perform your own testing further. Remember to pick your own datasets and specify path.
 ```bash
-python 05_Drift/01_data_merge_drift_new.py
-python 05_Drift/02_data_tokenise.py
-python 05_Drift/03_drift_evaluation.py
+python 05-Drift/01_data_merge_drift_new.py
+python 05-Drift/02_drift_tokenise.py
+python 05-Drift/03_drift_evaluation.py
 ```
 ## Evaluation Methodology
 
